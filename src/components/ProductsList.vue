@@ -24,7 +24,7 @@
               </b-card-text>
               <!--Botones añadir quitar-->
               <div class="bg-dark d-flex justify-content-between align-items-center">
-                <BtnSubtractAdd @btnSaysTheQuantityIs="setQuantityInCard" :id="el.id" :stock="el.stock" :initialQuantity="quantityToInsert[el.id]"/>
+                <BtnSubtractAdd @btnSaysTheQuantityIs="setQuantityInCard" :id="el.id" :stock="el.stock"/>
                 <BIconCartPlusFill class="flex-grow-1 fs-2 pe-2"
                   @click="insertQuantity(el.id,el.attributes[0].icon,el.name,el.code,el.price,el.description, el.stock)"
                   :class="[(el.stock==0) ? 'text-secondary' : 'text-light btn-add', '']" />
@@ -154,7 +154,7 @@
           quantity: this.modal.quantity
         });
         this.resetModal();
-        this.quantityToInsert[this.modal.id]=1;
+       // this.quantityToInsert[this.modal.id]=1;
         this.$swal.fire(`Producto ingresado`);
       },
     }
