@@ -24,7 +24,7 @@
               </b-card-text>
               <!--Botones añadir quitar-->
               <div class="bg-dark d-flex justify-content-between align-items-center">
-                <BtnSubtractAdd @btnSaysTheQuantityIs="setQuantityInCard" :id="el.id" :stock="el.stock"/>
+                <BtnSubtractAdd @btnSaysTheQuantityIs="setQuantityInCard" :id="el.id" :stock="el.stock" :initialQuantity="quantityToInsert[el.id]"/>
                 <BIconCartPlusFill class="flex-grow-1 fs-2 pe-2"
                   @click="insertQuantity(el.id,el.attributes[0].icon,el.name,el.code,el.price,el.description, el.stock)"
                   :class="[(el.stock==0) ? 'text-secondary' : 'text-light btn-add', '']" />
@@ -132,7 +132,7 @@
         this.modal.quantity = this.quantityToInsert[id];
         this.modal.description = description;
         this.modal.stock = stock;
-        console.log('stock antes: '+stock)
+        console.log('stock antes de agregar: '+stock)
         this.$bvModal.show('modal-prevent-closing')
 
       },
@@ -147,14 +147,14 @@
         this.modal.stock = null;
       },
       handleOk() {
-        this.$store.dispatch('insertModalQuantity', {
+        this.$store.dispatch('insertQuantityInCart', {
           id: this.modal.id,
           name: this.modal.name,
           price: this.modal.price,
           quantity: this.modal.quantity
         });
         this.resetModal();
-       // this.quantityToInsert[this.modal.id]=1;
+        this.quantityToInsert[this.modal.id]=1; //se resetea a 1 luego de ingresar el producto
         this.$swal.fire(`Producto ingresado`);
       },
     }

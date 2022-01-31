@@ -17,8 +17,8 @@
     name: 'BtnLessMore',
     data() {
       return {
-        maxStockClass: false,
         quantity:this.initialQuantity,
+        maxStockClass: false,
       }
     },
     props: {
@@ -34,8 +34,16 @@
         type: Number,
         default: 1,
       },
+      //
+      zeroQuantityIsToDelete: {
+        type: Boolean,
+        default: false,
+      },
     },
-    computed:{
+    watch:{
+      initialQuantity(){
+        this.quantity=this.initialQuantity;
+      }
     },
     methods: {
       handleClick(id, num) {
@@ -45,13 +53,17 @@
           this.$swal.fire('El stock es ' + this.stock);
           return;
         }
-        if (newNum < 1) {
+        if (newNum < 1 && this.zeroQuantityIsToDelete==false) {
           this.$swal.fire('La cantidad minima debe ser 1');
           return;
         }
         this.maxStockClass = (newNum == this.stock) ? true : false;
         this.quantity = newNum;
-        this.$emit('btnSaysTheQuantityIs',{id:this.id,quantity:this.quantity})
+        this.$emit('btnSaysTheQuantityIs', {
+          id: this.id,
+          quantity: this.quantity,
+          num,
+        })
       }
     }
   }

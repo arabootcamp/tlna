@@ -48,33 +48,6 @@ export default new Vuex.Store({
           quantity: data.quantity
         })
     },
-    /*
-    mutaUpdateQuantity: (state, data) => {
-
-      for (let i = 0; i < state.cart.length; i++)
-        if (state.cart[i].id == data.id) {
-          let newQuantity = state.cart[i].quantity + data.num;
-          let newStock = state.cart[i].stock - data.num;
-          console.log(newQuantity, newStock)
-          if (newQuantity >= 0 && newStock >= 0) {
-            console.log("actualizo ....", newStock, newQuantity)
-            state.cart[i].stock = newStock;
-            state.cart[i].quantity = newQuantity;
-            //actualizo el stock de producto 
-            for (let i = 0; i < state.products.length; i++)
-              if (state.products[i].id == data.id) {
-                state.products[i].stock = newStock;
-                break;
-              }
-            state.responseUpdateQuantity = true;
-            if (newQuantity == 0)
-              state.cart.splice(i, 1);
-          } else {
-            console.log("no actualizo...")
-            state.responseUpdateQuantity = false;
-          }
-        }
-    }*/
   },
   actions: {
     //http://sva.talana.com:8000/api/product-category/
@@ -95,7 +68,7 @@ export default new Vuex.Store({
       let data = await response.json();
       commit('mutaProducts', data);
     },
-    insertModalQuantity({
+    insertQuantityInCart({
       commit
     }, data) {
       //actualizo el carrito

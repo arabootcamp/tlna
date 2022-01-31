@@ -1,12 +1,12 @@
 <template>
   <div>
-    Pruebas
+    Pruebas ...
     <br><br><br><br><br>
     <div v-for="el in getProducts" :key="el.id">
-      <BtnSubtractAdd />
+      <BtnSubtractAdd :id="el.id" :stock="el.stock" :initialQuantity="valor"/>
       <br><br>
     </div>
-    <b-button @click="test">Click</b-button>
+    <button @click="clickme">click</button>
   </div>
 </template>
 
@@ -23,6 +23,7 @@
     },
     data() {
       return {
+        valor:0,
       }
     },
     computed: {
@@ -34,6 +35,11 @@
     methods: {
       test(){
         console.log('agregar')
+      },
+      clickme(){
+        console.log('antes de cambiar valor en prueba '+this.valor)
+        this.valor+=1;
+         console.log('despues de cambiar valor en prueba '+this.valor)
       }
     }
   }
