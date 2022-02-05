@@ -1,12 +1,11 @@
 <template>
   <div class="d-inline-block">
     <div class="d-flex">
-      <button class="box box--less" v-bind:class="[(stock==0) ? 'bg-secondary' : 'bg-danger', '']"
+      <button class="box box--less"
+        v-bind:class="[(min==1 && (max==0 || quantity==1)) ? 'bg-secondary' : 'bg-danger', '']"
         @click.stop="handleClick(id,-1)">-</button>
-
-      <span class="box box--quantity">{{(stock==0)?0:quantity}}</span>
-
-      <button class="box box--more" :class="[(stock==0 || maxStockClass) ? 'bg-secondary' : 'bg-primary', '']"
+      <span class="box box--quantity">{{(min==1 && max==0)?0:quantity}}</span>
+      <button class="box box--more" :class="[(max==quantity || max==0) ? 'bg-secondary' : 'bg-primary', '']"
         @click.stop="handleClick(id,1)">+</button>
     </div>
   </div>
@@ -14,54 +13,45 @@
 
 <script>
   export default {
-    name: 'BtnLessMore',
+    name: 'BtnSustractAdd',
     data() {
-      return {
-        quantity:this.initialQuantity,
-        maxStockClass: false,
-      }
+      return {}
     },
     props: {
       id: {
         type: Number,
-        default: null,
+        required: true
       },
-      stock: {
+      min: {
         type: Number,
-        default: 0,
+        required: true
       },
-      initialQuantity: {
+      max: {
+        type: Number,
+        required: true
+      },
+      quantity: {
         type: Number,
         default: 1,
       },
-      //
-      zeroQuantityIsToDelete: {
-        type: Boolean,
-        default: false,
-      },
-    },
-    watch:{
-      initialQuantity(){
-        this.quantity=this.initialQuantity;
-      }
     },
     methods: {
       handleClick(id, num) {
         let newNum = this.quantity + num;
-
-        if (this.stock == 0 || newNum > this.stock) {
-          this.$swal.fire('El stock es ' + this.stock);
-          return;
+        if(this.max==0 && this.min==1){
+          this.$swal.fire('No hay stock ...');
+          return
         }
-        if (newNum < 1 && this.zeroQuantityIsToDelete==false) {
-          this.$swal.fire('La cantidad minima debe ser 1');
-          return;
+        if (newNum < this.min) {
+          this.$swal.fire('La cantidad mínima debe ser ... ' + this.min);
+          return
         }
-        this.maxStockClass = (newNum == this.stock) ? true : false;
-        this.quantity = newNum;
+        if (newNum > this.max  && this.min==1) {
+          this.$swal.fire('La cantidad máxima debe ser ... ' + this.max);
+          return
+        }
         this.$emit('btnSaysTheQuantityIs', {
           id: this.id,
-          quantity: this.quantity,
           num,
         })
       }

@@ -8,28 +8,30 @@
       <b-row class="g-3" v-else>
         <b-col cols="12" sm="6" lg="4" xl="3" v-for="el in productsToShow" :key="'prod-'+el.id"
           class="position-relative">
-          <b-card style="max-width: 20rem;" class="h-100 mx-auto">
-            <div class="position-relative">
-              <img :src="el.attributes[0].icon" alt="imagen">
-              <div class="position-absolute bottom-0 start-0">
-                <p v-if="parseInt(el.stock)==0" class="bg-danger text-light px-2 my-0">No hay Stock</p>
-                <p v-else class=" bg-success text-light px-2 my-0">Disponible</p>
+          <b-card style="max-width: 20rem;" class="h-100">
+            <div class="h-100 d-flex flex-column justify-content-between">
+              <div class="position-relative">
+                <img :src="el.attributes[0].icon" alt="imagen">
+                <div class="position-absolute bottom-0 start-0">
+                  <p v-if="parseInt(el.stock)==0" class="bg-danger text-light px-2 my-0">No hay Stock</p>
+                  <p v-else class=" bg-success text-light px-2 my-0">Disponible</p>
+                </div>
               </div>
-            </div>
-
-            <b-card-body class="px-0">
-              <b-card-title>{{el.attributes[0].name}}</b-card-title>
-              <b-card-text>
-                {{el.price | filterPriceFormat}}<br>
-              </b-card-text>
+              <b-card-body class="px-0">
+                <b-card-title>{{el.name}}</b-card-title>
+                <b-card-text>
+                  {{el.price | filterPriceFormat}}<br>
+                </b-card-text>
+              </b-card-body>
               <!--Botones añadir quitar-->
               <div class="bg-dark d-flex justify-content-between align-items-center">
-                <BtnSubtractAdd @btnSaysTheQuantityIs="setQuantityInCard" :id="el.id" :stock="el.stock" :initialQuantity="quantityToInsert[el.id]"/>
+                <BtnSubtractAdd @btnSaysTheQuantityIs="setQuantity" :id="el.id" :min="1" :max="el.stock"
+                  :quantity="quantityToInsert[el.id]" />
                 <BIconCartPlusFill class="flex-grow-1 fs-2 pe-2"
                   @click="insertQuantity(el.id,el.attributes[0].icon,el.name,el.code,el.price,el.description, el.stock)"
                   :class="[(el.stock==0) ? 'text-secondary' : 'text-light btn-add', '']" />
               </div>
-            </b-card-body>
+            </div>
           </b-card>
         </b-col>
       </b-row>
@@ -47,7 +49,8 @@
             <span class="d-block"><strong>Nombre: </strong> {{modal.name}}</span>
             <span class="d-block"><strong>Código: </strong> {{modal.code}}</span>
             <span class="d-block"><strong>Precio: </strong> {{modal.price | filterPriceFormat}}</span>
-            <BtnSubtractAdd class="my-3" @btnSaysTheQuantityIs="setQuantityInModal" :id="modal.id" :stock="modal.stock" :initialQuantity="modal.quantity"/>
+            <BtnSubtractAdd class="my-3" @btnSaysTheQuantityIs="setQuantity" :id="modal.id" :min="1" :max="modal.stock"
+              :quantity="modal.quantity" />
             <span class="d-block"><strong>Sub-total: </strong> {{modal.price*modal.quantity | filterPriceFormat}}</span>
           </b-col>
           <b-col cols="12">{{modal.descripcion}}</b-col>
@@ -70,8 +73,7 @@
     },
     data() {
       return {
-        quantityToInsert: {
-        },
+        quantityToInsert: {},
         modal: {
           id: null,
           title: "Producto Agregado",
@@ -106,16 +108,15 @@
       },
     },
     methods: {
-      setQuantityInCard(dataBtn) {
-        this.quantityToInsert[dataBtn.id] = dataBtn.quantity;
-      },
-      setQuantityInModal(dataBtn) {
-        this.modal.quantity = dataBtn.quantity;
+      setQuantity(dataBtn) {
+        this.quantityToInsert[dataBtn.id] = (!(this.quantityToInsert[dataBtn.id])) ? 1 + dataBtn.num : this
+          .quantityToInsert[dataBtn.id] + dataBtn.num;
+        this.modal.quantity += dataBtn.num;
       },
       insertQuantity(id, icon, name, code, price, description, stock) {
         //modal
         if (stock == 0) {
-          this.$swal.fire("No hay stock");
+          this.$swal.fire("No hay stock ...");
           return;
         }
 
@@ -132,19 +133,17 @@
         this.modal.quantity = this.quantityToInsert[id];
         this.modal.description = description;
         this.modal.stock = stock;
-        console.log('stock antes de agregar: '+stock)
         this.$bvModal.show('modal-prevent-closing')
-
       },
       resetModal() {
-        this.id = null;
+        this.id = 0;
         this.modal.icon = null;
         this.modal.name = null;
         this.modal.code = null;
         this.modal.price = null;
         this.modal.quantity = null;
         this.modal.description = null;
-        this.modal.stock = null;
+        this.modal.stock = 0;
       },
       handleOk() {
         this.$store.dispatch('insertQuantityInCart', {
@@ -154,7 +153,7 @@
           quantity: this.modal.quantity
         });
         this.resetModal();
-        this.quantityToInsert[this.modal.id]=1; //se resetea a 1 luego de ingresar el producto
+        this.quantityToInsert[this.modal.id] = 1; //se resetea a 1 luego de ingresar el producto
         this.$swal.fire(`Producto ingresado`);
       },
     }

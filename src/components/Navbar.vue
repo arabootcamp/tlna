@@ -1,5 +1,5 @@
 <template>
-  <div class="sp-navbar p-2 p-sm-3">
+  <div class="p-2 p-sm-3">
     <div class="d-flex justify-content-between align-items-center">
       <strong class="ms-0">Categorías</strong>
       <a v-b-toggle.collapse-1>
@@ -27,7 +27,7 @@
   } from 'vuex';
 
   export default {
-    name: 'Navbar2',
+    name: 'Navbar',
     computed: {
       ...mapGetters(['getCategories']),
       selectedCategory() {
@@ -41,10 +41,6 @@
   a {
     text-decoration: none !important;
     color: black !important;
-  }
-
-  .sp-navbar {
-    min-height: 80px;
   }
 
   .active-box {
@@ -61,9 +57,4 @@
     background-color: rgb(237, 251, 210) !important;
   }
 
-  @media (min-width: 768px) {
-    .sp-navbar {
-      min-height: calc(100vh - 80px - 1px);
-    }
-  }
 </style>

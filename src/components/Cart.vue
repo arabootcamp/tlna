@@ -2,30 +2,32 @@
   <div>
     <b-container fluid class="mt-2 px-2">
       <!-- Stack the columns on mobile by making one full-width and the other half-width -->
-      <b-row v-for="el in cartProducts" :key="'cart'+el.id" class="g-1">
-        <b-col cols="5" class="mt-2" v-if="el.quantity!=0">
-          <p class="my-0">{{el.name}}</p>
-          <p class="my-0">{{el.price | filterPriceFormat}}</p>
-        </b-col>
-        <b-col cols="3" class="mt-2" v-if="el.quantity!=0">
-          <!--Escuchando evento emitido por el hijo boton-->
-          <BtnSubtractAdd class="my-3" @btnSaysTheQuantityIs="setQuantityInCart" :id="el.id" :stock="el.stock"
-            :initialQuantity="el.quantity" :zeroQuantityIsToDelete="true"/>
-        </b-col>
-        <b-col cols="4" class="mt-2 d-flex justify-content-end" v-if="el.quantity!=0">Sub-total:
-          {{el.price*el.quantity | filterPriceFormat}}
-        </b-col>
-      </b-row>
-      <b-row v-if="totalPurchase>0">
-        <b-col cols="7" class="mt-4 d-flex justify-content-end">
-          <strong>Total</strong>
-        </b-col>
-        <b-col cols="5" class="mt-4 d-flex justify-content-end">
-          <strong>
-            {{totalPurchase | filterPriceFormat}}
-          </strong>
-        </b-col>
-      </b-row>
+      <div v-if="totalPurchase>0">
+        <b-row v-for="el in cartProducts" :key="'cart'+el.id" class="g-1">
+          <b-col cols="6" sm="5" class="mt-3">
+            <p class="my-0">{{el.name}}</p>
+            <p class="my-0">{{el.price | filterPriceFormat}}</p>
+          </b-col>
+          <b-col cols="6" sm="3" class="mt-3 d-flex justify-content-end align-items-center">
+            <!--Escuchando evento emitido por el hijo boton-->
+            <BtnSubtractAdd @btnSaysTheQuantityIs="setQuantityInCart" :id="el.id" :min="0" :max="el.stock"
+              :quantity="el.quantity" />
+          </b-col>
+          <b-col cols="12" sm="4" class="mt-0 mt-sm-3 d-flex justify-content-end align-items-center">Sub-total:
+            {{el.price*el.quantity | filterPriceFormat}}
+          </b-col>
+        </b-row>
+        <b-row>
+          <b-col cols="7" class="mt-4 d-flex justify-content-end">
+            <strong>Total</strong>
+          </b-col>
+          <b-col cols="5" class="mt-4 d-flex justify-content-end">
+            <strong>
+              {{totalPurchase | filterPriceFormat}}
+            </strong>
+          </b-col>
+        </b-row>
+      </div>
       <div v-else>
         <b-alert show variant="warning">No hay productos en el carro</b-alert>
       </div>

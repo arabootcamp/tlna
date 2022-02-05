@@ -38,10 +38,12 @@ export default new Vuex.Store({
         if (state.cart[i].id == data.id) {
           productFoundCart = true;
           state.cart[i].quantity += parseInt(data.quantity);
+          if(state.cart[i].quantity==0)
+            state.cart.splice(i,1);
           break;
         }
       if (!productFoundCart)
-        state.cart.push({
+        state.cart.unshift({
           id: data.id,
           name: data.name,
           price: data.price,
