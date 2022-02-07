@@ -15,11 +15,21 @@ export default new Vuex.Store({
     categories: [],
     products: [],
     cart: [],
+    filter: {
+      query: '',
+    }
   },
   getters: {
     getCategories: state => state.categories,
     getProducts: state => state.products,
     getCart: state => state.cart,
+    getQuery: state => state.filter.query,
+    getFilteredProducts(state) {
+      if (state.filter.query.length > 0)
+        return state.products.filter(product => product.name.toLowerCase().includes(state.filter.query) || product.category.name.toLowerCase().includes(state.filter.query))
+      else
+        return [];  
+    }
   },
   mutations: {
     mutaCategories: (state, data) => state.categories = data,
@@ -38,8 +48,8 @@ export default new Vuex.Store({
         if (state.cart[i].id == data.id) {
           productFoundCart = true;
           state.cart[i].quantity += parseInt(data.quantity);
-          if(state.cart[i].quantity==0)
-            state.cart.splice(i,1);
+          if (state.cart[i].quantity == 0)
+            state.cart.splice(i, 1);
           break;
         }
       if (!productFoundCart)
@@ -50,6 +60,7 @@ export default new Vuex.Store({
           quantity: data.quantity
         })
     },
+    mutaSetQuery: (state, query) => state.filter.query = query.toLowerCase(),
   },
   actions: {
     //http://sva.talana.com:8000/api/product-category/

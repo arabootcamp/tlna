@@ -1,41 +1,54 @@
 <template>
-  <div class="py-2">
-
-    <b-container fluid class="bv-example-row my-3">
-      <div v-if="productsToShow.length==0" class="alert alert-warning" role="alert">
-        No hay productos a mostrar
-      </div>
-      <b-row class="g-3" v-else>
-        <b-col cols="12" sm="6" lg="4" xl="3" v-for="el in productsToShow" :key="'prod-'+el.id"
-          class="position-relative">
-          <b-card style="max-width: 20rem;" class="h-100">
-            <div class="h-100 d-flex flex-column justify-content-between">
-              <div class="position-relative">
-                <img :src="el.attributes[0].icon" alt="imagen">
-                <div class="position-absolute bottom-0 start-0">
-                  <p v-if="parseInt(el.stock)==0" class="bg-danger text-light px-2 my-0">No hay Stock</p>
-                  <p v-else class=" bg-success text-light px-2 my-0">Disponible</p>
+  <div class="py-4">
+    <div v-if="productsToShow.length==0" class=" alert alert-warning" role="alert">
+      No hay productos a mostrar
+    </div>
+    <div v-else>
+      <b-container fluid class="bv-example-row my-3">
+        <b-row class="g-3" id="my-container">
+          <b-col cols="12" sm="6" lg="4" xl="3" v-for="el in productsPerPage" :key="'prod-'+el.id"
+            class="position-relative">
+            <b-card style="max-width: 20rem;" class="h-100 mx-auto">
+              <div class="h-100 d-flex flex-column justify-content-between">
+                <div class="position-relative">
+                  <!-- img -->
+                  <b-carousel id="carousel-1" :interval="4000" controls label-prev="" label-next="" background="#ababab"
+                    style="text-shadow: 1px 1px 2px #333;" class="border border-secondary">
+                    <b-carousel-slide v-for="item in el.attributes" :key="'attr'+item.id" :img-src="item.icon"
+                      class="box-img">
+                    </b-carousel-slide>
+                  </b-carousel>
+                  <!-- -->
+                  <div class="position-absolute bottom-0 start-0">
+                    <p v-if="parseInt(el.stock)==0" class="bg-danger text-light px-2 my-0">No hay Stock</p>
+                    <p v-else class=" bg-success text-light px-2 my-0">Disponible</p>
+                  </div>
+                </div>
+                <b-card-body class="px-0">
+                  <b-card-title>{{el.name}}</b-card-title>
+                  <b-card-text>
+                    {{el.price | filterPriceFormat}}<br>
+                  </b-card-text>
+                </b-card-body>
+                <!--Botones añadir quitar-->
+                <div class="bg-dark d-flex justify-content-between align-items-center">
+                  <BtnSubtractAdd @btnSaysTheQuantityIs="setQuantity" :id="el.id" :min="1" :max="el.stock"
+                    :quantity="quantityToInsert[el.id]" />
+                  <BIconCartPlusFill class="flex-grow-1 fs-2 pe-2"
+                    @click="insertQuantity(el.id,el.attributes[0].icon,el.name,el.code,el.price,el.description, el.stock)"
+                    :class="[(el.stock==0) ? 'text-secondary' : 'text-light btn-add', '']" />
                 </div>
               </div>
-              <b-card-body class="px-0">
-                <b-card-title>{{el.name}}</b-card-title>
-                <b-card-text>
-                  {{el.price | filterPriceFormat}}<br>
-                </b-card-text>
-              </b-card-body>
-              <!--Botones añadir quitar-->
-              <div class="bg-dark d-flex justify-content-between align-items-center">
-                <BtnSubtractAdd @btnSaysTheQuantityIs="setQuantity" :id="el.id" :min="1" :max="el.stock"
-                  :quantity="quantityToInsert[el.id]" />
-                <BIconCartPlusFill class="flex-grow-1 fs-2 pe-2"
-                  @click="insertQuantity(el.id,el.attributes[0].icon,el.name,el.code,el.price,el.description, el.stock)"
-                  :class="[(el.stock==0) ? 'text-secondary' : 'text-light btn-add', '']" />
-              </div>
-            </div>
-          </b-card>
-        </b-col>
-      </b-row>
-    </b-container>
+            </b-card>
+          </b-col>
+        </b-row>
+      </b-container>
+      <!--pagination -->
+      <div class="mt-5">
+        <b-pagination v-model="currentPage" :total-rows="rows" :per-page="perPage" align="center">
+        </b-pagination>
+      </div>
+    </div>
 
     <!--Modal -->
     <b-modal id="modal-prevent-closing" ref="modal" :title="modal.title" @hidden="resetModal" @ok="handleOk"
@@ -73,6 +86,8 @@
     },
     data() {
       return {
+        currentPage: 1,
+        perPage: 4,
         quantityToInsert: {},
         modal: {
           id: null,
@@ -94,11 +109,17 @@
       },
     },
     computed: {
-      ...mapGetters(['getProducts', 'getCart']),
+      ...mapGetters(['getProducts', 'getCart', 'getQuery', 'getFilteredProducts']),
       productsToShow() {
-        if (this.idCategory == null) {
+        if (this.idCategory == null && this.getQuery == "") {
+          console.log('NO query listar todos los productos');
           return this.getProducts;
         }
+        if (this.idCategory == null && this.getQuery != '') {
+          console.log('SI query listar productos filtrados')
+          return this.getFilteredProducts;
+        }
+
         let productList = [];
         this.getProducts.forEach(el => {
           if (el.category.id == this.idCategory)
@@ -106,6 +127,21 @@
         });
         return productList;
       },
+      rows() {
+        return this.productsToShow.length;
+      },
+      productsPerPage() {
+        let start = this.perPage * (this.currentPage - 1);
+        return this.productsToShow.slice(start, start + this.perPage);
+      }
+    },
+    watch: {
+      idCategory() {
+        this.currentPage = 1;
+      },
+      productsToShow() {
+        this.currentPage = 1;
+      }
     },
     methods: {
       setQuantity(dataBtn) {
@@ -162,10 +198,15 @@
 </script>
 
 <style scoped>
-  img {
+  
+  img{
+    width:100%;
+    object-fit: cover;
+  }
+  
+  .box-img {
     width: 100%;
     height: 220px;
-    object-fit: cover;
   }
 
   .btn-add:hover {

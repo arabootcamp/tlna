@@ -29,13 +29,23 @@ const routes = [{
         path: 'products/:idCategory/:nameCategory',
         component: Features,
         name: 'features',
-      }
+        // props: true,
+      },
+      {
+        path: '*',
+        redirect: { name: 'NotFound' },
+      },
     ]
   },
   {
-    path: '/pruebas',
-    name: 'Pruebas',
-    component: () => import( /* webpackChunkName: "Pruebas" */ '../views/Pruebas.vue')
+    path: '/test',
+    name: 'test',
+    component: () => import( /* webpackChunkName: "NotFound" */ '../views/Test.vue'),
+  },
+  {
+    path: '*',
+    name: 'notFound',
+    component: () => import( /* webpackChunkName: "NotFound" */ '../views/NotFound.vue'),
   },
 ]
 

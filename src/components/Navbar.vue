@@ -1,11 +1,11 @@
 <template>
-  <div class="p-2 p-sm-3">
-    <div class="d-flex justify-content-between align-items-center">
+  <div class="py-2 bg-white border border-dark">
+    <div class="h-100 d-flex justify-content-between align-items-center px-2">
       <strong class="ms-0">Categorías</strong>
       <a v-b-toggle.collapse-1>
         <BIconList class="fs-2" /></a>
     </div>
-    <b-collapse id="collapse-1" class="mt-2">
+    <b-collapse id="collapse-1" class="mt-2 border-bottom border-dark px-2 bg-white">
       <ul v-for="el in getCategories" :key="'cat-'+el.id" class="mx-0 px-0 ">
         <li class="d-flex justify-content-between align-items-center">
           <router-link :to="{name:'features', params:{idCategory:el.id,nameCategory:el.name} }"

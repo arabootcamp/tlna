@@ -22,6 +22,8 @@ Vue.filter('filterFirstUpperCase', firstUpperCase);
 
 Vue.config.productionTip = false;
 
+import "bootstrap";
+
 new Vue({
   router,
   store,

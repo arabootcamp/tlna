@@ -16,6 +16,9 @@
 </template>
 
 <script>
+  import {
+    mapGetters
+  } from 'vuex';
   import ProductsList from '@/components/ProductsList.vue'
 
   export default {
@@ -27,6 +30,7 @@
       return {}
     },
     computed: {
+       ...mapGetters(['getQuery','getFilteredProducts']),
       path() {
         let response = [];
         let p = this.$route.path;

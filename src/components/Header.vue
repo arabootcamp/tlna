@@ -13,7 +13,7 @@
             class="h-100 d-flex flex-column align-items-center justify-content-evenly flex-sm-row justify-content-center justify-content-md-end">
             <div class="border border-secondary rounded-pill ps-1 pe-3">
               <BIconSearch />
-              <input type="search" placeholder="Buscador de Producto y Categorías" size=32 class="border-0">
+              <input type="search" placeholder="Buscador de Producto y Categorías" size=32 class="border-0" v-model="search" @keyup.enter="clickSearch">
             </div>
             <b-button class="d-flex flex-column align-items-center ms-md-3 me-md-4 border border-0 bg-white text-dark"
               v-b-toggle.sidebar-variant>
@@ -27,7 +27,6 @@
           </div>
         </b-col>
       </b-row>
-
       <!--Sidebar-->
       <SidebarCart />
     </b-container>
@@ -46,16 +45,32 @@
       SidebarCart
     },
     data() {
-      return {}
+      return {
+      }
     },
     computed: {
-      ...mapGetters(['getCategories', 'getSelectedCategory', 'getProducts', 'getCart']),
+      ...mapGetters(['getCategories', 'getSelectedCategory', 'getProducts', 'getCart','getQuery']),
       totalQuantity() {
         let total = 0;
         this.getCart.forEach(el => {
           total += el.quantity;
         });
         return total;
+      },
+      //search
+      search:{
+        get(){
+          return this.getQuery;
+        },
+        set(val){
+          this.$store.commit('mutaSetQuery',val);
+          this.$router.push('/home/products');
+        }
+      }
+    },
+    methods:{
+      clickSearch(){
+        this.$router.push('/home/products');
       }
     }
   }
