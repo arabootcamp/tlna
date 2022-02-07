@@ -14,8 +14,10 @@
                   <!-- img -->
                   <b-carousel id="carousel-1" :interval="4000" controls label-prev="" label-next="" background="#ababab"
                     style="text-shadow: 1px 1px 2px #333;" class="border border-secondary">
-                    <b-carousel-slide v-for="item in el.attributes" :key="'attr'+item.id" :img-src="item.icon"
-                      class="box-img">
+                    <b-carousel-slide v-for="item in el.attributes" :key="'attr'+item.id" class="box-img">
+                      <template #img>
+                        <img :src="item.icon" alt="img">
+                      </template>
                     </b-carousel-slide>
                   </b-carousel>
                   <!-- -->
@@ -198,12 +200,12 @@
 </script>
 
 <style scoped>
-  
-  img{
-    width:100%;
+  img {
+    width: 100%;
+    height: 100%;
     object-fit: cover;
   }
-  
+
   .box-img {
     width: 100%;
     height: 220px;
